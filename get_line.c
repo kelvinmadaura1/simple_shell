@@ -1,33 +1,66 @@
 #include "shell.h"
 
 /**
- *get_line - Read entire line from stream into buffer
- *Return: Buffer containing line read.
- */
-
-void sighandler(int sig_num)
+* _getline - Read The Input By User From Stdin
+* Return: Input
+*alx-school-- shell
+*/
+char *_getline()
 {
-  (void)sig_num;
-  write(STDOUT_FILENO, "\n$", _strlen("\n$"));
-  fflush(stdout);
-}
+int i, buffsize = BUFSIZE, rd;
+char c = 0;
+char *buff = malloc(buffsize);
 
-int main(void)
-{
-	char *buffer;
-	char **args;
-	int status = 1;
-
-	while (status)
+	if (buff == NULL)
 	{
-		printf("cisfun$ ");
-		buffer = get_line();
-		args = split_line(buffer);
-		status = exec_line(args);
+		free(buff);
+		return (NULL);
 	}
 
-	free(buffer);
-	free(args);
+	for (i = 0; c != EOF && c != '\n'; i++)
+	{
+		fflush(stdin);
+		rd = read(STDIN_FILENO, &c, 1);
+		if (rd == 0)
+		{
+			free(buff);
+			exit(EXIT_SUCCESS);
+		}
+		buff[i] = c;
+		if (buff[0] == '\n')
+		{
+			free(buff);
+			return ("\0");
+		}
+		if (i >= buffsize)
+		{
+			buff = _realloc(buff, buffsize, buffsize + 1);
+			if (buff == NULL)
+			{
+				return (NULL);
+			}
+		}
+	}
+	buff[i] = '\0';
+	hashtag_handle(buff);
+	return (buff);
+}
 
-	return (1);
+/**
+ * hashtag_handle - remove everything after #
+ * @buff: input;
+ * Return:void
+ */
+void hashtag_handle(char *buff)
+{
+	int i;
+
+		for (i = 0; buff[i] != '\0'; i++)
+		{
+			if (buff[i] == '#')
+			{
+			buff[i] = '\0';
+			break;
+			}
+	}
 }
